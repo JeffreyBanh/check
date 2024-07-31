@@ -10,7 +10,7 @@ with st.sidebar:
 
     # File upload
     uploaded_file = st.file_uploader('Upload a file')
-st.title("💬 Chatbot")
+st.title("RAG")
     
 def generate_response(uploaded_file, openai_api_key, query_text):
     # Load document if file is uploaded
