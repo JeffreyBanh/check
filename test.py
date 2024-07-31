@@ -1,5 +1,6 @@
 import streamlit as st
-from openai import OpenAI
+# from openai import OpenAI
+from langchain_openai import OpenAI
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings
 from langchain.vectorstores import Chroma
@@ -9,7 +10,7 @@ with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
 
     # File upload
-    uploaded_file = st.file_uploader('Upload a file')
+    # uploaded_file = st.file_uploader('Upload a file')
 st.title("RAG")
     
 def generate_response(uploaded_file, openai_api_key, query_text):
@@ -26,15 +27,18 @@ def generate_response(uploaded_file, openai_api_key, query_text):
         # Create retriever interface
         retriever = db.as_retriever()
         # Create QA chain
-        qa = RetrievalQA.from_chain_type(llm=OpenAI(openai_api_key=openai_api_key), chain_type='stuff', retriever=retriever)
+        llm = OpenAI(openai_api_key=openai_api_key);
+        qa = RetrievalQA.from_chain_type(llm, chain_type='stuff', retriever=retriever)
         return qa.run(query_text)
 
+uploaded_file = st.file_uploader('Upload a file')
 # Query text
 query_text = st.text_input('Enter your question:', placeholder = 'Please provide a short summary.', disabled=not uploaded_file)
 
 # Form input and query
 result = []
 with st.form('myform', clear_on_submit=True):
+    openai_api_key = st.text_input('OpenAI API Key', type='password', disabled=not (uploaded_file and query_text))
     submitted = st.form_submit_button('Submit', disabled=not(uploaded_file and query_text))
     if submitted and openai_api_key.startswith('sk-'):
         with st.spinner('Calculating...'):
