@@ -7,39 +7,10 @@ from langchain.chains import RetrievalQA
 
 with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
-    "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-    "[View the source code](https://github.com/streamlit/llm-examples/blob/main/Chatbot.py)"
-    "[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/streamlit/llm-examples?quickstart=1)"
 
+    # File upload
+    uploaded_file = st.file_uploader('Upload a file')
 st.title("💬 Chatbot")
-
-# if "messages" not in st.session_state:
-#     st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
-# for msg in st.session_state.messages:
-#     st.chat_message(msg["role"]).write(msg["content"])
-
-# if prompt := st.chat_input():
-#     if not openai_api_key:
-#         st.info("Please add your OpenAI API key to continue.")
-#         st.stop()
-
-#     client = OpenAI(api_key=openai_api_key)
-#     st.session_state.messages.append({"role": "user", "content": prompt})
-#     st.chat_message("user").write(prompt)
-#     response = client.chat.completions.create(model="gpt-4o-mini", messages=st.session_state.messages)
-#     msg = response.choices[0].message.content
-#     st.session_state.messages.append({"role": "assistant", "content": msg})
-#     st.chat_message("assistant").write(msg)
-    
-# uploaded_files = st.file_uploader(
-#     "Choose a CSV file", accept_multiple_files=True
-# )
-# for uploaded_file in uploaded_files:
-#     bytes_data = uploaded_file.read()
-#     st.write("filename:", uploaded_file.name)
-#     st.write(bytes_data)
-    
     
 def generate_response(uploaded_file, openai_api_key, query_text):
     # Load document if file is uploaded
@@ -58,9 +29,6 @@ def generate_response(uploaded_file, openai_api_key, query_text):
         qa = RetrievalQA.from_chain_type(llm=OpenAI(openai_api_key=openai_api_key), chain_type='stuff', retriever=retriever)
         return qa.run(query_text)
 
-
-# File upload
-uploaded_file = st.file_uploader('Upload a file')
 # Query text
 query_text = st.text_input('Enter your question:', placeholder = 'Please provide a short summary.', disabled=not uploaded_file)
 
